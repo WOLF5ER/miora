@@ -68,19 +68,53 @@ export default function SettingsClient({
   }
 
   async function handleCoverChange(files: FileList | null) {
-    const file = files?.[0];
-    if (!file) return;
-    setUploadingCover(true);
-    const path = `${masterId}/cover.jpg`;
-    const { error: uploadError } = await supabase.storage.from("portfolio").upload(path, file, { upsert: true });
-    if (!uploadError) {
-      const { data } = supabase.storage.from("portfolio").getPublicUrl(path);
-      const url = `${data.publicUrl}?t=${Date.now()}`;
-      await supabase.from("master_profiles").update({ cover_url: url }).eq("id", masterId);
-      setCover(url);
+  const file = files?.[0];
+  if (!file) return;
+
+  // Простая валидация
+  if (file.size > 5 * 1024 * 1024) { // 5MB
+    alert("Файл слишком большой (макс. 5 МБ)");
+    return;
+  }
+
+  setUploadingCover(true);
+
+  try {
+    const path = `${masterId}/cover.jpg`; // можно сделать динамическое расширение, но .jpg ок
+
+    const { error: uploadError } = await supabase.storage
+      .from("portfolio")
+      .upload(path, file, { upsert: true });
+
+    if (uploadError) {
+      console.error("Upload error:", uploadError);
+      alert("Ошибка загрузки: " + uploadError.message);
+      return;
     }
+
+    const { data } = supabase.storage.from("portfolio").getPublicUrl(path);
+    const url = `${data.publicUrl}?t=${Date.now()}`;
+
+    const { error: updateError } = await supabase
+      .from("master_profiles")
+      .update({ cover_url: url })
+      .eq("id", masterId);
+
+    if (updateError) {
+      console.error("Update error:", updateError);
+      alert("Ошибка обновления профиля: " + updateError.message);
+      return;
+    }
+
+    setCover(url);
+    // router.refresh(); // можно добавить, если нужно обновить серверный компонент
+  } catch (err) {
+    console.error(err);
+    alert("Неизвестная ошибка при загрузке обложки");
+  } finally {
     setUploadingCover(false);
   }
+}
 
   async function save() {
     setSaving(true);
