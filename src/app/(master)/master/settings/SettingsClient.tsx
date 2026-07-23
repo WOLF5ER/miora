@@ -165,22 +165,33 @@ export default function SettingsClient({
         <p className="mt-1 text-[13px] text-ink-soft">Как вас видят клиенты в профиле</p>
       </div>
 
-      <div>
-        <div className="relative isolate h-36 w-full overflow-hidden rounded-2xl border border-line" style={{ background: "var(--surface-2)" }}>
-          {cover ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={cover} alt="" className="h-full w-full object-cover" />
-          ) : null}
-          <button
-            onClick={() => coverInputRef.current?.click()}
-            disabled={uploadingCover}
-            className="absolute bottom-2.5 right-2.5 flex items-center gap-1.5 rounded-full bg-black/55 px-3 py-1.5 text-[11.5px] text-white"
-          >
-            <Camera size={12} strokeWidth={1.8} />
-            {uploadingCover ? "Загружаем…" : "Изменить обложку"}
-          </button>
-          <input ref={coverInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleCoverChange(e.target.files)} />
-        </div>
+     {/* Обложка */}
+<div className="relative isolate h-36 w-full overflow-hidden rounded-2xl border border-line" style={{ background: "var(--surface-2)" }}>
+  {cover ? (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={cover} alt="" className="h-full w-full object-cover" />
+  ) : null}
+
+  <button
+    onClick={() => {
+      console.log("Клик по кнопке обложки"); // ← для дебага
+      coverInputRef.current?.click();
+    }}
+    disabled={uploadingCover}
+    className="absolute bottom-2.5 right-2.5 flex items-center gap-1.5 rounded-full bg-black/55 px-3 py-1.5 text-[11.5px] text-white disabled:opacity-50"
+  >
+    <Camera size={12} strokeWidth={1.8} />
+    {uploadingCover ? "Загружаем…" : "Изменить обложку"}
+  </button>
+
+  <input 
+    ref={coverInputRef} 
+    type="file" 
+    accept="image/*" 
+    className="hidden" 
+    onChange={(e) => handleCoverChange(e.target.files)} 
+  />
+</div>
 
         <div className="relative z-10 -mt-10 flex items-end gap-4 px-1">
           <button
