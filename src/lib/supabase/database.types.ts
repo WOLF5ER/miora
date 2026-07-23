@@ -3,7 +3,8 @@ export type ServiceCategory =
   | "Брови и ресницы"
   | "Визаж"
   | "Стрижки и укладки"
-  | "Косметология";
+  | "Косметология"
+  | "Прочее";
 
 export type UserRole = "client" | "master";
 export type BookingStatus = "pending" | "confirmed" | "cancelled";
